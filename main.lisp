@@ -1,4 +1,4 @@
-(defvar max-file-len 9999)
+(defvar max-file-len 10000000)
 
 (defun append-char-to-string (string char)
   (concatenate 'string string (string char)))
@@ -23,8 +23,31 @@
         (push (split-line line (char delem 0)) data)
         )
       ) 
-    (reverse data))
+    (nreverse data))
   ))
+
+(defun string-sanitize (text)
+  (let ((sanitized-text ""))
+    (dotimes (i (length text))
+      (let ((char (char text i)))
+        (when (and (graphic-char-p char)
+                   (not (char= char #\u00a0)))
+          (setf sanitized-text (concatenate 'string sanitized-text (string char))))))
+    sanitized-text))
+
+
+(defun clean-csv (data)
+  (let ((cleaned-data '()))
+    (dotimes (i (length data))
+      (let ((row '()))
+        (dotimes (j (length (nth i data)))
+          (push (string-sanitize (nth j (nth i data))) row))
+        (push (nreverse row) cleaned-data))) ; Reverse the row to maintain the original order
+    (nreverse cleaned-data))) ; Reverse the cleaned-data to maintain the original order
+
+
+;;(defun remove-special-characters (string) (let ((special-chars "!@#$%^&*()_+|{}[];':\",.<>/?\\`~-=")) (replace-regexp-in-string (format "[%s]" special-chars) "" string)))
+
 
 ;; expects flat data only
 (defun transpose-row-to-col (data)
@@ -36,3 +59,6 @@
         (setf (nth 0 output) (reverse (nth 0 output)))
       )
     (reverse output)))
+
+
+(print (clean-csv (read-csv-file "data.csv" ";")))
