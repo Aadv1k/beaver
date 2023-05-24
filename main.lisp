@@ -1,0 +1,38 @@
+(defvar max-file-len 9999)
+
+(defun append-char-to-string (string char)
+  (concatenate 'string string (string char)))
+
+(defun split-line (line &optional (delimiter #\,))
+  (let ((tokens '()) (current ""))
+    (dotimes (i (length line))
+      (if (char= (char line i) delimiter)
+          (progn
+            (push current tokens)
+            (setq current ""))
+          (setq current (append-char-to-string current (char line i)))))
+    (push current tokens)
+    (reverse tokens)))
+
+(defun read-csv-file (filepath &optional (delem ","))
+  (let ((data '()))
+  (with-open-file (file filepath :external-format :iso-8859-1)
+    (dotimes (i max-file-len)
+      (let ((line (read-line file nil)))
+        (if (not line) (return))
+        (push (split-line line (char delem 0)) data)
+        )
+      ) 
+    (reverse data))
+  ))
+
+;; expects flat data only
+(defun transpose-row-to-col (data)
+  (let ((output '()) (top (nth 0 data)))
+    (dotimes (i (length top))
+      (push '() output)
+      (loop :for j :from 0 :below (length data)
+            :do (push (nth i (nth j data)) (nth 0 output)))
+        (setf (nth 0 output) (reverse (nth 0 output)))
+      )
+    (reverse output)))
