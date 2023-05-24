@@ -3,6 +3,7 @@
   (:use #:cl)
   (:export
     #:read-csv
+    #:write-csv
     #:clean
     #:get-column
     #:drop-column
@@ -44,6 +45,11 @@
       ) 
     (clean (nreverse data)))
   ))
+
+(defun write-csv (data filepath &optional (delimiter #\,))
+  (with-open-file (file filepath :direction :output :if-exists :supersede)
+    (dolist (row data)
+      (format file "~{~a~^~a~}~%" row delimiter))))
 
 (defun get-mean (seq)
     "Get the mean from a sequence of numbers"    

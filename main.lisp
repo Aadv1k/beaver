@@ -1,8 +1,5 @@
 (load "./src/beaver.lisp")
-(load "./src/utils.lisp")
 
 (defvar data (beaver:read-csv "./data/btc.csv"))
 
-(print
-  (beaver:sort-by data "High")
-)
+(print (beaver:drop-column data '("Symbol" "Data" "Open" "Close" "Volume" "Name" "SNo")))
