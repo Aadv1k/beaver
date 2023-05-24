@@ -26,6 +26,15 @@
     (nreverse data))
   ))
 
+
+
+(defun util-is-integer (text)
+  (dotimes (i (length text))
+    (unless (or (parse-integer (string (char text i)) :junk-allowed t))
+      (return-from util-is-integer nil)))
+  t)
+
+
 (defun string-sanitize (text)
   (let ((sanitized-text ""))
     (dotimes (i (length text))
@@ -33,8 +42,12 @@
         (when (and (graphic-char-p char)
                    (not (char= char #\u00a0)))
           (setf sanitized-text (concatenate 'string sanitized-text (string char))))))
-    sanitized-text))
 
+    (if (util-is-integer sanitized-text)
+        (setq sanitized-text (parse-integer sanitized-text))
+    )
+
+    sanitized-text))
 
 (defun clean-csv (data)
   (let ((cleaned-data '()))
@@ -45,10 +58,14 @@
         (push (nreverse row) cleaned-data)))
     (nreverse cleaned-data)))
 
-(defun get-col (data name)
+(defun get-col (data &optional (name nil))
+
+
   (let ((idx nil)
         (head (first data))
         (result '()))
+
+  (if (not name) (return-from get-col head))
     
     (dotimes (i (length head))
       (when (string= (nth i head) name)
@@ -73,8 +90,6 @@
       )
     (reverse output)))
 
-
-
 (defun melt (data from-cols to-cols)
   (assert (eq (length to-cols) 2))
   (assert (> (length from-cols) 1))
@@ -89,12 +104,14 @@
     (list to-cols melted-values  melted-types)
     ))
 
-
 (defun print-matrix (matrix)
-(format t "~{~{~a~^ ~}~%~}" matrix)
-  )
+  (format t "~{~{~a~^ ~}~%~}" matrix)
+)
+
+(defun get-mean (data)
+)
 
 
 
 
-(print-matrix (melt (clean-csv (read-csv "data.csv" ";")) '("First name" "Last name" "Username") '("type" "value")))
+(print (get-col (clean-csv (read-csv "btc.csv" ))  "High"))
