@@ -4,5 +4,5 @@
 (defvar data (beaver:read-csv "./data/btc.csv"))
 
 (print
-  (beaver:drop-column data '("Name" "SNo" "Symbol"))
+  (beaver:sort-by data "High")
 )

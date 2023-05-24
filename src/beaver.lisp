@@ -6,6 +6,8 @@
     #:clean
     #:get-column
     #:drop-column
+    #:set-column
+    #:sort-by
     #:get-mean
     #:get-median
     #:melt
@@ -58,6 +60,17 @@
     )
   )
 
+(defun sort-by (data column-name &optional (reverse nil))
+  (let* ((column-index (utils:find-index (nth 0 data) (lambda (x) (string= x column-name))))
+         (sorted-data (sort (rest data) (lambda (row1 row2)
+                                          (let ((value1 (utils:parse-float (nth column-index row1)))
+                                                (value2 (utils:parse-float (nth column-index row2))))
+                                            (if reverse
+                                                (> value1 value2)
+                                                (< value1 value2)))))))
+    (cons (nth 0 data) sorted-data)))
+
+
 (defun drop-column (data &optional names-to-remove)
   (if (not names-to-remove)
       (return-from drop-column data))
@@ -71,6 +84,13 @@
             (push (nth i elem) row)))
         (push (reverse row) output)))
     (reverse output)))
+
+(defun set-column (data column-name new-value)
+  (let ((column-index (utils:find-index (nth 0 data) (lambda (x) (string= x column-name)))))
+    (dolist (row data)
+      (setf (nth column-index row) new-value)))
+  data)
+
 
 (defun get-column (data &optional (name nil))
   (let ((idx nil)
