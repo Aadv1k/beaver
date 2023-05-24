@@ -18,3 +18,4 @@ A common lisp library for data analysis and manipulation. Modelled after the [pa
 ### Credits
 
 - [BTC pricing data](https://www.kaggle.com/datasets/sudalairajkumar/cryptocurrencypricehistory)
+- [Surveymonkey data](https://github.com/kshashank03/Survey-Monkey-Tutorial)

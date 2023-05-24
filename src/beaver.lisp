@@ -5,6 +5,7 @@
     #:read-csv
     #:clean
     #:get-column
+    #:drop-column
     #:get-mean
     #:get-median
     #:melt
@@ -56,6 +57,20 @@
     (nth (floor (/ (+ upper lower) 2)) seq)
     )
   )
+
+(defun drop-column (data &optional names-to-remove)
+  (if (not names-to-remove)
+      (return-from drop-column data))
+  (let ((output '())
+        (indices (loop for name in names-to-remove
+                       collect (utils:find-index (nth 0 data) (lambda (x) (string= x name))))))
+    (dolist (elem data)
+      (let ((row '()))
+        (dotimes (i (length elem))
+          (unless (member i indices)
+            (push (nth i elem) row)))
+        (push (reverse row) output)))
+    (reverse output)))
 
 (defun get-column (data &optional (name nil))
   (let ((idx nil)

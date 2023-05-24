@@ -1,7 +1,8 @@
 (load "./src/beaver.lisp")
-(in-package beaver)
+(load "./src/utils.lisp")
+
+(defvar data (beaver:read-csv "./data/btc.csv"))
 
 (print
- (beaver:get-median
- (beaver:get-column
-   (beaver:read-csv "./data/btc.csv") "SNo")))
+  (beaver:drop-column data '("Name" "SNo" "Symbol"))
+)

@@ -3,11 +3,17 @@
   (:use #:cl)
   (:export #:char-append-to-string
            #:split-string
+           #:find-index
            #:is-number
            #:parse-float
            #:string-sanitize))
 (in-package :utils)
 
+(defun find-index (seq test)
+  (loop for index from 0
+        for elem in seq
+        when (funcall test elem)
+        do (return index)))
 
 (defun char-append-to-string (char string )
   (concatenate 'string string (string char)))
