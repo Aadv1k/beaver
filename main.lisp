@@ -2,6 +2,6 @@
 (in-package beaver)
 
 (print
+ (beaver:get-median
  (beaver:get-column
-  (beaver:clean
-   (beaver:read-csv "./data/btc.csv"))))
+   (beaver:read-csv "./data/btc.csv") "SNo")))

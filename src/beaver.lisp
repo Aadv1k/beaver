@@ -5,6 +5,8 @@
     #:read-csv
     #:clean
     #:get-column
+    #:get-mean
+    #:get-median
     #:melt
     #:transpose
    )
@@ -16,18 +18,6 @@
 
 (defvar max-file-len 10000000)
 
-(defun read-csv (filepath &optional (delem ","))
-  "Serializes a CSV file into a 2D matrix"
-  (let ((data '()))
-  (with-open-file (file filepath :external-format :iso-8859-1)
-    (dotimes (i max-file-len)
-      (let ((line (read-line file nil)))
-        (if (not line) (return))
-        (push (utils:split-string line (char delem 0)) data)
-        )
-      ) 
-    (nreverse data))
-  ))
 
 (defun clean (data)
   "Removes any non-standard characters and whitespaces from matrix"
@@ -39,13 +29,40 @@
         (push (nreverse row) cleaned-data)))
     (nreverse cleaned-data)))
 
+(defun read-csv (filepath &optional (delem ","))
+  "Serializes a CSV file into a 2D matrix"
+  (let ((data '()))
+  (with-open-file (file filepath :external-format :iso-8859-1)
+    (dotimes (i max-file-len)
+      (let ((line (read-line file nil)))
+        (if (not line) (return))
+        (push (utils:split-string line (char delem 0)) data)
+        )
+      ) 
+    (clean (nreverse data)))
+  ))
+
+(defun get-mean (seq)
+    "Get the mean from a sequence of numbers"    
+     (assert seq)
+     (/ (reduce '+ (mapcar'utils:parse-float seq)) (length seq))
+)
+
+(defun get-median (seq)
+  "Get the median from a sequence of numbers"    
+  (if (eql (mod (length seq) 2) 0)
+      (nth (/ (length seq) 2) seq))
+  (let* ((mid (/ (length seq) 2)) (upper (ceiling mid)) (lower (floor mid)))
+    (nth (floor (/ (+ upper lower) 2)) seq)
+    )
+  )
+
 (defun get-column (data &optional (name nil))
   (let ((idx nil)
         (head (first data))
         (result '()))
 
   (if (not name) (return-from get-column head))
-    
     (dotimes (i (length head))
       (when (string= (nth i head) name)
         (setq idx i)
